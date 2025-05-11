@@ -1,9 +1,10 @@
 [package]
 name = "lvgl-sys"
-version = "0.1.0"
+version = "9.2.2"
 edition = "2024"
 
 [dependencies]
 
 [build-dependencies]
 bindgen = "0.71.0"
+cc = "1.2"
