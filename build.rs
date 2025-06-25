@@ -71,6 +71,8 @@ fn main() {
         // Tell cargo to invalidate the built crate whenever any of the
         // included header files changed.
         .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
+        // Layout tests fail when cross-compiling
+        .layout_tests(false)
         .wrap_unsafe_ops(true)
         .use_core()
         // Finish the builder and generate the bindings.
