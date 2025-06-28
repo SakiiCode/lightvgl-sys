@@ -14,10 +14,10 @@ fn main() {
 
     let project_dir = canonicalize(PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap()));
     let vendor = project_dir.join("vendor");
-    let lvgl_src = vendor.join("lvgl").join("src");
 
     // let lv_config_dir = env::var(CONFIG_NAME)
     //     .ok()
+    println!("cargo:rerun-if-env-changed={}", CONFIG_NAME);
     let lv_config_dir = Some(env::var(CONFIG_NAME).unwrap())
         .map(PathBuf::from)
         .map(|conf_path| {
@@ -57,9 +57,6 @@ fn main() {
         compiler_args = vec!["-DLV_CONF_INCLUDE_SIMPLE=1", "-I", path.to_str().unwrap()];
     }
 
-        // Set correct target triple for bindgen when cross-compiling
-    let target = env::var("TARGET").expect("Cargo build scripts always have TARGET");
-
     // The bindgen::Builder is the main entry point
     // to bindgen, and lets you build up options for
     // the resulting bindings.
@@ -86,12 +83,22 @@ fn main() {
         .write_to_file(out_path.join("bindings.rs"))
         .expect("Couldn't write bindings!");
 
+    #[cfg(feature = "library")]
+    compile_library(compiler_args, vendor);
+}
+
+#[cfg(feature = "library")]
+fn compile_library(compiler_args: Vec<&str>, vendor: PathBuf) {
+    let target = env::var("TARGET").expect("Cargo build scripts always have TARGET");
+
+    let lvgl_src = vendor.join("lvgl").join("src");
+
     let mut cfg = cc::Build::new();
 
     add_c_files(&mut cfg, &lvgl_src);
 
     // #cfg(not(target)) does not work here
-    if !target.starts_with("x86_64"){
+    if !target.starts_with("x86_64") {
         cfg.flag("-mlongcalls");
     }
 
@@ -107,6 +114,7 @@ fn main() {
     cfg.compile("lvgl");
 }
 
+#[cfg(feature = "library")]
 fn add_c_files(build: &mut cc::Build, path: impl AsRef<Path>) {
     for e in path.as_ref().read_dir().unwrap() {
         let e = e.unwrap();
