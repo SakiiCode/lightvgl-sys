@@ -57,11 +57,29 @@ fn main() {
         compiler_args = vec!["-DLV_CONF_INCLUDE_SIMPLE=1", "-I", path.to_str().unwrap()];
     }
 
+    let mut cross_compile_flags = Vec::new();
+    // Set correct target triple for bindgen when cross-compiling
+    let target = env::var("CROSS_COMPILE").map_or_else(
+        |_| env::var("TARGET").expect("Cargo build scripts always have TARGET"),
+        |c| c.trim_end_matches('-').to_owned(),
+    );
+    let host = env::var("HOST").expect("Cargo build scripts always have HOST");
+    if target != host {
+        cross_compile_flags.push("-target");
+        cross_compile_flags.push(target.as_str());
+    }
+
     // The bindgen::Builder is the main entry point
     // to bindgen, and lets you build up options for
     // the resulting bindings.
     let bindings = bindgen::Builder::default()
-        .clang_args(&compiler_args)
+        .clang_args(
+            &compiler_args
+                .iter()
+                .chain(&cross_compile_flags)
+                .map(|a| a.to_string())
+                .collect::<Vec<String>>(),
+        )
         // The input header we would like to generate
         // bindings for.
         .header(vendor.join("lvgl/lvgl.h").to_str().unwrap())
