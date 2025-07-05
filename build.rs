@@ -4,19 +4,9 @@ use std::path::{Path, PathBuf};
 static CONFIG_NAME: &str = "DEP_LV_CONFIG_PATH";
 
 fn main() {
-    // Tell cargo to look for shared libraries in the specified directory
-    //println!("cargo:rustc-link-search=/vendor/lvgl");
-
-    // Tell cargo to tell rustc to link the system bzip2
-    // shared library.
-    //println!("cargo:rustc-link-lib=SDL2");
-    //println!("cargo::rustc-flags=-mlongcalls");
-
     let project_dir = canonicalize(PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap()));
     let vendor = project_dir.join("vendor");
 
-    // let lv_config_dir = env::var(CONFIG_NAME)
-    //     .ok()
     println!("cargo:rerun-if-env-changed={}", CONFIG_NAME);
     let lv_config_dir = Some(env::var(CONFIG_NAME).unwrap())
         .map(PathBuf::from)
@@ -44,13 +34,6 @@ fn main() {
             );
             conf_path
         });
-
-    /*let mut headers = Vec::new();
-
-    if let Some(lv_config_dir) = &lv_config_dir {
-        headers.push(lv_config_dir.join("lv_conf.h"));
-    }
-    headers.push();*/
 
     let mut compiler_args = Vec::new();
     if let Some(path) = &lv_config_dir {
@@ -88,7 +71,9 @@ fn main() {
         .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
         // Layout tests fail when cross-compiling
         .layout_tests(false)
+        // Wrapping unsafe ops is necessary for Rust 2024 edition
         .wrap_unsafe_ops(true)
+        // Use ::core for no_std compatibility
         .use_core()
         // Finish the builder and generate the bindings.
         .generate()
@@ -120,11 +105,6 @@ fn compile_library(compiler_args: Vec<&str>, vendor: PathBuf) {
         cfg.flag("-mlongcalls");
     }
 
-    /*if let Some(lv_config_dir) = lv_config_dir {
-        //cfg.define("LV_CONF_INCLUDE_SIMPLE", Some("1"));
-        //cfg.include(lv_config_dir);
-        cfg.flag(flag)
-    }*/
     compiler_args.iter().for_each(|arg| {
         let _ = cfg.flag(arg);
     });
