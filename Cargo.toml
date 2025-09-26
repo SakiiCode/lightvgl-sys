@@ -10,6 +10,14 @@ repository = "https://github.com/SakiiCode/lightvgl-sys"
 readme = "README.md"
 categories = ["embedded", "gui", "external-ffi-bindings", "no-std", "graphics"]
 keywords = ["lvgl"]
+exclude = [
+    "vendor/lvgl/demos",
+    "vendor/lvgl/tests",
+    "vendor/lvgl/examples",
+    "vendor/lvgl/docs",
+    "vendor/lvgl/scripts",
+    "vendor/lvgl/env_support",
+]
 
 [dependencies]
 
