@@ -8,32 +8,35 @@ fn main() {
     let vendor = project_dir.join("vendor");
 
     println!("cargo:rerun-if-env-changed={}", CONFIG_NAME);
-    let lv_config_dir = Some(env::var(CONFIG_NAME).unwrap())
-        .map(PathBuf::from)
-        .map(|conf_path| {
-            if !conf_path.exists() {
-                panic!(
-                    "Directory {} referenced by {} needs to exist",
-                    conf_path.to_string_lossy(),
-                    CONFIG_NAME
-                );
-            }
-            if !conf_path.is_dir() {
-                panic!("{} needs to be a directory", CONFIG_NAME);
-            }
-            if !conf_path.join("lv_conf.h").exists() {
-                panic!(
-                    "Directory {} referenced by {} needs to contain a file called lv_conf.h",
-                    conf_path.to_string_lossy(),
-                    CONFIG_NAME
-                );
-            }
-            println!(
-                "cargo:rerun-if-changed={}",
-                conf_path.join("lv_conf.h").to_str().unwrap()
+    let lv_config_dir = Some(
+        env::var(CONFIG_NAME)
+            .expect("lv_conf.h not found. Set DEP_LV_CONFIG_PATH to its location."),
+    )
+    .map(PathBuf::from)
+    .map(|conf_path| {
+        if !conf_path.exists() {
+            panic!(
+                "Directory {} referenced by {} needs to exist",
+                conf_path.to_string_lossy(),
+                CONFIG_NAME
             );
-            conf_path
-        });
+        }
+        if !conf_path.is_dir() {
+            panic!("{} needs to be a directory", CONFIG_NAME);
+        }
+        if !conf_path.join("lv_conf.h").exists() {
+            panic!(
+                "Directory {} referenced by {} needs to contain a file called lv_conf.h",
+                conf_path.to_string_lossy(),
+                CONFIG_NAME
+            );
+        }
+        println!(
+            "cargo:rerun-if-changed={}",
+            conf_path.join("lv_conf.h").to_str().unwrap()
+        );
+        conf_path
+    });
 
     let mut compiler_args = Vec::new();
     if let Some(path) = &lv_config_dir {
