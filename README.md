@@ -1,4 +1,4 @@
-# lvgl-sys
+# lightvgl-sys
 
 Rust raw bindings for the LVGL C library.
 

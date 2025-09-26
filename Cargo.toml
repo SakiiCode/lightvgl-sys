@@ -1,12 +1,12 @@
 [package]
-name = "lvgl-sys"
-version = "9.2.2"
+name = "lightvgl-sys"
+version = "9.2.0"
 edition = "2021"
 license = "MIT"
 authors = ["SakiiCode"]
 description = "Raw bindings to the LVGL C library."
 homepage = "https://lvgl.io"
-repository = "https://github.com/SakiiCode/lvgl-sys"
+repository = "https://github.com/SakiiCode/lightvgl-sys"
 readme = "README.md"
 categories = ["embedded", "gui", "external-ffi-bindings", "no-std", "graphics"]
 keywords = ["lvgl"]
