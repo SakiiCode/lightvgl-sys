@@ -43,6 +43,7 @@ fn main() {
     if let Some(path) = &lv_config_dir {
         compiler_args = vec![
             "-DLV_CONF_INCLUDE_SIMPLE=1",
+            "-DLV_USE_PRIVATE_API=1",
             "-I",
             path.to_str().unwrap(),
             // workaround for lv_font_montserrat_14_aligned.c:18 as it includes "lvgl/lvgl.h"
