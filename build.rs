@@ -39,8 +39,16 @@ fn main() {
     });
 
     let mut compiler_args = Vec::new();
+    let vendor_clone = vendor.clone();
     if let Some(path) = &lv_config_dir {
-        compiler_args = vec!["-DLV_CONF_INCLUDE_SIMPLE=1", "-I", path.to_str().unwrap()];
+        compiler_args = vec![
+            "-DLV_CONF_INCLUDE_SIMPLE=1",
+            "-I",
+            path.to_str().unwrap(),
+            // workaround for lv_font_montserrat_14_aligned.c:18 as it includes "lvgl/lvgl.h"
+            "-I",
+            vendor_clone.to_str().unwrap(),
+        ];
     }
 
     let mut cross_compile_flags = Vec::new();

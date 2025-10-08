@@ -1,6 +1,6 @@
 [package]
 name = "lightvgl-sys"
-version = "9.2.0"
+version = "9.3.0"
 edition = "2021"
 license = "MIT"
 authors = ["SakiiCode"]
@@ -22,7 +22,7 @@ exclude = [
 [dependencies]
 
 [build-dependencies]
-bindgen = "0.71.0"
+bindgen = "0.72.1"
 cc = "1.2"
 
 [features]
