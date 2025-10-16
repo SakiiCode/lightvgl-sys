@@ -28,6 +28,7 @@ DEP_LV_CONFIG_PATH=`pwd` cargo build
 
 | lightvgl-sys | LVGL  |
 | ------------ | ----- |
+| 9.4.x        | 9.4.0 |
 | 9.3.x        | 9.3.0 |
 | 9.2.x        | 9.2.2 |
 
