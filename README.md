@@ -21,6 +21,12 @@ Alternatively, it can be added before cargo commands:
 DEP_LV_CONFIG_PATH=`pwd` cargo build
 ```
 
+## Compatibility table
+
+| lightvgl-sys | LVGL  |
+| ------------ | ----- |
+| 9.2.x        | 9.2.2 |
+
 ## See also
 
 If looking for safe bindings, check out [lv_bevy_ecs](https://github.com/SakiiCode/lv_bevy_ecs)
