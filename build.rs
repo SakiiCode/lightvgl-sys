@@ -50,22 +50,23 @@ fn main() {
         let lv_config_dir = conf_path;
 
         compiler_args.extend(string_arr![
-            "-DLV_CONF_INCLUDE_SIMPLE=1".to_owned(),
-            "-I".to_owned(),
-            lv_config_dir.to_str().unwrap().to_owned(),
+            "-DLV_CONF_INCLUDE_SIMPLE=1",
+            "-I",
+            lv_config_dir.to_str().unwrap(),
         ]);
     };
 
-    let mut cross_compile_flags = Vec::new();
     // Set correct target triple for bindgen when cross-compiling
     let target = env::var("CROSS_COMPILE").map_or_else(
         |_| env::var("TARGET").expect("Cargo build scripts always have TARGET"),
         |c| c.trim_end_matches('-').to_owned(),
     );
     let host = env::var("HOST").expect("Cargo build scripts always have HOST");
-    if target != host {
-        cross_compile_flags.extend(string_arr!["-target", target]);
-    }
+    let cross_compile_flags = if target != host {
+        string_vec!["-target", &target]
+    } else {
+        string_vec![]
+    };
 
     // The bindgen::Builder is the main entry point
     // to bindgen, and lets you build up options for
