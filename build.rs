@@ -11,7 +11,7 @@ fn main() {
 
     println!("cargo:rerun-if-env-changed={}", CONFIG_NAME);
 
-    // if on docs.rs, lv_conf.h will be autodetected in the vendor folder
+    // if use-vendored-config is enabled, autodetect lv_conf.h in the vendor folder
     let mut compiler_args = string_vec![
         "-DLV_USE_PRIVATE_API=1",
         // workaround for lv_font_montserrat_14_aligned.c:18 as it includes "lvgl/lvgl.h"
@@ -19,8 +19,8 @@ fn main() {
         vendor.to_str().unwrap(),
     ];
 
-    // if not on docs.rs, define LV_CONF_INCLUDE_SIMPLE=1 and include the config folder
-    if std::env::var("DOCS_RS").is_err() {
+    // if disabled, define LV_CONF_INCLUDE_SIMPLE=1 and include the config folder
+    if !cfg!(feature = "use-vendored-config") {
         let config_path = env::var(CONFIG_NAME)
             .expect("lv_conf.h not found. Set DEP_LV_CONFIG_PATH to its location.");
 
