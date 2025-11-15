@@ -1,6 +1,6 @@
 [package]
 name = "lightvgl-sys"
-version = "9.4.0"
+version = "9.4.1"
 edition = "2024"
 license = "MIT"
 authors = ["SakiiCode"]
