@@ -1,6 +1,8 @@
 use std::env;
 use std::path::{Path, PathBuf};
 
+use string_literals::{string_arr, string_vec};
+
 static CONFIG_NAME: &str = "DEP_LV_CONFIG_PATH";
 
 fn main() {
@@ -8,12 +10,21 @@ fn main() {
     let vendor = project_dir.join("vendor");
 
     println!("cargo:rerun-if-env-changed={}", CONFIG_NAME);
-    let lv_config_dir = Some(
-        env::var(CONFIG_NAME)
-            .expect("lv_conf.h not found. Set DEP_LV_CONFIG_PATH to its location."),
-    )
-    .map(PathBuf::from)
-    .map(|conf_path| {
+
+    // if use-vendored-config is enabled, autodetect lv_conf.h in the vendor folder
+    let mut compiler_args = string_vec![
+        "-DLV_USE_PRIVATE_API=1",
+        // workaround for lv_font_montserrat_14_aligned.c:18 as it includes "lvgl/lvgl.h"
+        "-I",
+        vendor.to_str().unwrap(),
+    ];
+
+    // if disabled, define LV_CONF_INCLUDE_SIMPLE=1 and include the config folder
+    if !cfg!(feature = "use-vendored-config") {
+        let config_path = env::var(CONFIG_NAME)
+            .expect("lv_conf.h not found. Set DEP_LV_CONFIG_PATH to its location.");
+
+        let conf_path = PathBuf::from(config_path);
         if !conf_path.exists() {
             panic!(
                 "Directory {} referenced by {} needs to exist",
@@ -35,21 +46,12 @@ fn main() {
             "cargo:rerun-if-changed={}",
             conf_path.join("lv_conf.h").to_str().unwrap()
         );
-        conf_path
-    });
 
-    let mut compiler_args = Vec::new();
-    let vendor_clone = vendor.clone();
-    if let Some(path) = &lv_config_dir {
-        compiler_args = vec![
+        compiler_args.extend(string_arr![
             "-DLV_CONF_INCLUDE_SIMPLE=1",
-            "-DLV_USE_PRIVATE_API=1",
             "-I",
-            path.to_str().unwrap(),
-            // workaround for lv_font_montserrat_14_aligned.c:18 as it includes "lvgl/lvgl.h"
-            "-I",
-            vendor_clone.to_str().unwrap(),
-        ];
+            conf_path.to_str().unwrap(),
+        ]);
     }
 
     let mut cross_compile_flags = Vec::new();
@@ -60,8 +62,7 @@ fn main() {
     );
     let host = env::var("HOST").expect("Cargo build scripts always have HOST");
     if target != host {
-        cross_compile_flags.push("-target");
-        cross_compile_flags.push(target.as_str());
+        cross_compile_flags.extend(string_arr!["-target", target.as_str()]);
     }
 
     // The bindgen::Builder is the main entry point
@@ -72,8 +73,7 @@ fn main() {
             &compiler_args
                 .iter()
                 .chain(&cross_compile_flags)
-                .map(|a| a.to_string())
-                .collect::<Vec<String>>(),
+                .collect::<Vec<&String>>(),
         )
         // The input header we would like to generate
         // bindings for.
@@ -103,7 +103,7 @@ fn main() {
 }
 
 #[cfg(feature = "library")]
-fn compile_library(compiler_args: Vec<&str>, vendor: PathBuf) {
+fn compile_library(compiler_args: Vec<String>, vendor: PathBuf) {
     let target = env::var("TARGET").expect("Cargo build scripts always have TARGET");
 
     let lvgl_src = vendor.join("lvgl").join("src");

@@ -19,13 +19,19 @@ exclude = [
     "vendor/lvgl/env_support",
 ]
 
+
+[package.metadata.docs.rs]
+features = ["use-vendored-config"]
+
 [dependencies]
 
 [build-dependencies]
 bindgen = "0.72.1"
 cc = "1.2"
+string-literals = "1.0.1"
 
 [features]
 default = ["library", "raw-bindings"]
 library = []
 raw-bindings = []
+use-vendored-config = []
