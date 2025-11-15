@@ -8,14 +8,11 @@ Build requires the following environment variables to be set:
 
 - `DEP_LV_CONFIG_PATH`: Path to the directory containing the `lv_conf.h` header file used for configuration of the LVGL library.
 
-- `LIBCLANG_PATH`: Can be set with `~/export-esp.sh` (or for desktop `sudo apt install clang` then `/usr/lib/llvm-<version>/lib`)
-
 It is easier to store them in `.cargo/config.toml` then rust-analyzer will also pick them up.
 
 ```toml
 [env]
 DEP_LV_CONFIG_PATH = { relative = true, value = "." }
-LIBCLANG_PATH = "..."
 ```
 
 Alternatively, it can be added before cargo commands:
