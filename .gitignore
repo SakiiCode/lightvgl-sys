@@ -1,4 +1,4 @@
 /target
-lv_conf*.h
+/lv_conf*.h
 /.cargo
 /.vscode
