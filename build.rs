@@ -12,12 +12,7 @@ fn main() {
     println!("cargo:rerun-if-env-changed={}", CONFIG_NAME);
 
     // if use-vendored-config is enabled, autodetect lv_conf.h in the vendor folder
-    let mut compiler_args = string_vec![
-        "-DLV_USE_PRIVATE_API=1",
-        // workaround for lv_font_montserrat_14_aligned.c:18 as it includes "lvgl/lvgl.h"
-        "-I",
-        vendor.to_str().unwrap(),
-    ];
+    let mut compiler_args = string_vec!["-DLV_USE_PRIVATE_API=1"];
 
     // if disabled, define LV_CONF_INCLUDE_SIMPLE=1 and include the config folder
     if !cfg!(feature = "use-vendored-config") {
