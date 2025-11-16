@@ -1,12 +1,27 @@
-use std::env;
+use std::env::{self, VarError};
 use std::path::{Path, PathBuf};
 
 use string_literals::{string_arr, string_vec};
 
 static CONFIG_NAME: &str = "DEP_LV_CONFIG_PATH";
 
+fn env(name: &str, msg: &str) -> String {
+    match env::var(name) {
+        Ok(result) => result,
+        Err(VarError::NotPresent) => {
+            panic!("{}", msg);
+        }
+        Err(VarError::NotUnicode(_)) => {
+            panic!("{} must be valid UTF-8.", name);
+        }
+    }
+}
+
 fn main() {
-    let project_dir = canonicalize(PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap()));
+    let project_dir = canonicalize(PathBuf::from(env(
+        "CARGO_MANIFEST_DIR",
+        "Cargo build scripts always have CARGO_MANIFEST_DIR",
+    )));
     let vendor = project_dir.join("vendor");
 
     println!("cargo:rerun-if-env-changed={}", CONFIG_NAME);
@@ -16,14 +31,16 @@ fn main() {
 
     // if disabled, define LV_CONF_INCLUDE_SIMPLE=1 and include the config folder
     if !cfg!(feature = "use-vendored-config") {
-        let config_path = env::var(CONFIG_NAME)
-            .expect("lv_conf.h not found. Set DEP_LV_CONFIG_PATH to its location.");
+        let config_path = env(
+            CONFIG_NAME,
+            "lv_conf.h not found. Set DEP_LV_CONFIG_PATH to its directory.",
+        );
 
         let conf_path = PathBuf::from(config_path);
         if !conf_path.exists() {
             panic!(
                 "Directory {} referenced by {} needs to exist",
-                conf_path.to_string_lossy(),
+                conf_path.display(),
                 CONFIG_NAME
             );
         }
@@ -33,30 +50,28 @@ fn main() {
         if !conf_path.join("lv_conf.h").exists() {
             panic!(
                 "Directory {} referenced by {} needs to contain a file called lv_conf.h",
-                conf_path.to_string_lossy(),
+                conf_path.display(),
                 CONFIG_NAME
             );
         }
         println!(
             "cargo:rerun-if-changed={}",
-            conf_path.join("lv_conf.h").to_str().unwrap()
+            conf_path.join("lv_conf.h").display()
         );
-
-        let lv_config_dir = conf_path;
 
         compiler_args.extend(string_arr![
             "-DLV_CONF_INCLUDE_SIMPLE=1",
             "-I",
-            lv_config_dir.to_str().unwrap(),
+            conf_path.to_string_lossy().to_string(),
         ]);
     };
 
     // Set correct target triple for bindgen when cross-compiling
     let target = env::var("CROSS_COMPILE").map_or_else(
-        |_| env::var("TARGET").expect("Cargo build scripts always have TARGET"),
+        |_| env("TARGET", "Cargo build scripts always have TARGET"),
         |c| c.trim_end_matches('-').to_owned(),
     );
-    let host = env::var("HOST").expect("Cargo build scripts always have HOST");
+    let host = env("HOST", "Cargo build scripts always have HOST");
     let cross_compile_flags = if target != host {
         string_vec!["-target", &target]
     } else {
@@ -75,7 +90,7 @@ fn main() {
         )
         // The input header we would like to generate
         // bindings for.
-        .header(vendor.join("lvgl/lvgl.h").to_str().unwrap())
+        .header(vendor.join("lvgl/lvgl.h").to_string_lossy())
         // Tell cargo to invalidate the built crate whenever any of the
         // included header files changed.
         .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
@@ -91,10 +106,10 @@ fn main() {
         .expect("Unable to generate bindings");
 
     // Write the bindings to the $OUT_DIR/bindings.rs file.
-    let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
+    let out_path = PathBuf::from(env("OUT_DIR", "Cargo build scripts always have OUT_DIR"));
     bindings
         .write_to_file(out_path.join("bindings.rs"))
-        .expect("Couldn't write bindings!");
+        .expect("Could not write bindings.rs!");
 
     #[cfg(feature = "library")]
     compile_library(compiler_args, vendor);
@@ -102,7 +117,7 @@ fn main() {
 
 #[cfg(feature = "library")]
 fn compile_library(compiler_args: Vec<String>, vendor: PathBuf) {
-    let target = env::var("TARGET").expect("Cargo build scripts always have TARGET");
+    let target = env("TARGET", "Cargo build scripts always have TARGET");
 
     let lvgl_src = vendor.join("lvgl").join("src");
 
@@ -137,7 +152,7 @@ fn add_c_files(build: &mut cc::Build, path: impl AsRef<Path>) {
 
 fn canonicalize(path: impl AsRef<Path>) -> PathBuf {
     let canonicalized = path.as_ref().canonicalize().unwrap();
-    let canonicalized = &*canonicalized.to_string_lossy();
+    let canonicalized = &canonicalized.to_string_lossy();
 
     PathBuf::from(canonicalized.strip_prefix(r"\\?\").unwrap_or(canonicalized))
 }
