@@ -125,8 +125,8 @@ fn compile_library(compiler_args: Vec<String>, vendor: PathBuf) {
 
     add_c_files(&mut cfg, &lvgl_src);
 
-    // #cfg(not(target)) does not work here
-    if !target.starts_with("x86_64") {
+    // Fix for ESP32
+    if target.starts_with("xtensa") {
         cfg.flag("-mlongcalls");
     }
 
