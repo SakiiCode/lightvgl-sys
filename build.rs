@@ -26,8 +26,15 @@ fn main() {
 
     println!("cargo:rerun-if-env-changed={}", CONFIG_NAME);
 
+    println!("cargo:rerun-if-env-changed={}", "LV_COMPILER_ARGS");
+
     // if use-vendored-config is enabled, autodetect lv_conf.h in the vendor folder
     let mut compiler_args = string_vec!["-DLV_USE_PRIVATE_API=1"];
+
+    if let Some(args) = option_env!("LV_COMPILER_ARGS") {
+        let args = args.split(' ');
+        compiler_args.extend(args.map(|s|s.to_owned()));
+    }
 
     // if disabled, define LV_CONF_INCLUDE_SIMPLE=1 and include the config folder
     if !cfg!(feature = "use-vendored-config") {
@@ -82,12 +89,8 @@ fn main() {
     // to bindgen, and lets you build up options for
     // the resulting bindings.
     let bindings = bindgen::Builder::default()
-        .clang_args(
-            &compiler_args
-                .iter()
-                .chain(&cross_compile_flags)
-                .collect::<Vec<&String>>(),
-        )
+        .clang_args(&compiler_args)
+        .clang_args(cross_compile_flags)
         // The input header we would like to generate
         // bindings for.
         .header(vendor.join("lvgl/lvgl.h").to_string_lossy())
