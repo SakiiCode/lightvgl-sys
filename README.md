@@ -21,6 +21,15 @@ Alternatively, it can be added before cargo commands:
 DEP_LV_CONFIG_PATH=`pwd` cargo build
 ```
 
+## Optional configuration
+
+You might as well need to set one or more of these env variables, especially when cross-compiling:
+- `BINDGEN_EXTRA_CLANG_ARGS`: Extra clang arguments to be passed to bindgen
+- `LV_COMPILE_ARGS`:  Extra arguments to be passed both to bindgen and to the C compiler
+- `CROSS_COMPILE`: Target triple when cross-compiling
+- `LIBCLANG_PATH`: Custom *libclang.so* location
+
+
 ## Compatibility table
 
 | lightvgl-sys | LVGL  |
