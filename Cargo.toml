@@ -1,6 +1,6 @@
 [package]
 name = "lightvgl-sys"
-version = "9.4.3"
+version = "9.4.4"
 edition = "2024"
 license = "MIT"
 description = "Raw bindings to the LVGL C library."
