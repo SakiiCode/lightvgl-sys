@@ -34,6 +34,7 @@ You might as well need to set one or more of these env variables, especially whe
 
 | lightvgl-sys | LVGL  |
 | ------------ | ----- |
+| 9.5.x        | 9.5.0 |
 | 9.4.x        | 9.4.0 |
 | 9.3.x        | 9.3.0 |
 | 9.2.x        | 9.2.2 |
