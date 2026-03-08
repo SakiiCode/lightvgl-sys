@@ -28,14 +28,14 @@ fn main() {
 
     println!("cargo:rerun-if-env-changed={}", "LV_COMPILER_ARGS");
 
-    // if use-vendored-config is enabled, autodetect lv_conf.h in the vendor folder
-    let mut compiler_args = string_vec!["-DLV_USE_PRIVATE_API=1"];
+    let mut compiler_args = string_vec!["-DLV_USE_PRIVATE_API=1","-Wno-unused-parameter"];
 
     if let Some(args) = option_env!("LV_COMPILER_ARGS") {
         let args = args.split(' ');
         compiler_args.extend(args.map(|s| s.to_owned()));
     }
 
+    // if use-vendored-config is enabled, autodetect lv_conf.h in the vendor folder
     // if disabled, define LV_CONF_INCLUDE_SIMPLE=1 and include the config folder
     if !cfg!(feature = "use-vendored-config") {
         let config_path = env(
