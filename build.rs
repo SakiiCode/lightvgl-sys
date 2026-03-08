@@ -33,7 +33,7 @@ fn main() {
 
     if let Some(args) = option_env!("LV_COMPILER_ARGS") {
         let args = args.split(' ');
-        compiler_args.extend(args.map(|s|s.to_owned()));
+        compiler_args.extend(args.map(|s| s.to_owned()));
     }
 
     // if disabled, define LV_CONF_INCLUDE_SIMPLE=1 and include the config folder
@@ -120,18 +120,11 @@ fn main() {
 
 #[cfg(feature = "library")]
 fn compile_library(compiler_args: Vec<String>, vendor: PathBuf) {
-    let target = env("TARGET", "Cargo build scripts always have TARGET");
-
     let lvgl_src = vendor.join("lvgl").join("src");
 
     let mut cfg = cc::Build::new();
 
     add_c_files(&mut cfg, &lvgl_src);
-
-    // Fix for ESP32
-    if target.starts_with("xtensa") {
-        cfg.flag("-mlongcalls");
-    }
 
     compiler_args.iter().for_each(|arg| {
         let _ = cfg.flag(arg);
