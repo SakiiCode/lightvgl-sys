@@ -120,8 +120,6 @@ fn main() {
 
 #[cfg(feature = "library")]
 fn compile_library(compiler_args: Vec<String>, vendor: PathBuf) {
-    let target = env("TARGET", "Cargo build scripts always have TARGET");
-
     let lvgl_src = vendor.join("lvgl").join("src");
 
     let mut cfg = cc::Build::new();
