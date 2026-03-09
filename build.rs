@@ -32,7 +32,7 @@ fn main() {
 
     if let Some(args) = option_env!("LV_COMPILER_ARGS") {
         let args = args.split(' ');
-        compiler_args.extend(args.map(|s| s.to_owned()));
+        compiler_args.extend(args.map(|s|s.to_owned()));
     }
 
     // if use-vendored-config is enabled, autodetect lv_conf.h in the vendor folder
@@ -120,11 +120,16 @@ fn main() {
 
 #[cfg(feature = "library")]
 fn compile_library(compiler_args: Vec<String>, vendor: PathBuf) {
+    let target = env("TARGET", "Cargo build scripts always have TARGET");
+
     let lvgl_src = vendor.join("lvgl").join("src");
 
     let mut cfg = cc::Build::new();
 
     add_c_files(&mut cfg, &lvgl_src);
+
+    // Fix for ESP32
+    cfg.flag_if_supported("-mlongcalls");
 
     compiler_args.iter().for_each(|arg| {
         let _ = cfg.flag(arg);
