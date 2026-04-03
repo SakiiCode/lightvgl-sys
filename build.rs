@@ -84,6 +84,19 @@ fn main() {
         string_vec![]
     };
 
+    if target != host {
+        match env::var("CROSS_COMPILE") {
+            Ok(_)=>{},
+            Err(error)=>{
+                match error {
+                    VarError::NotPresent=>println!("cargo:warning=You are cross compiling but don't have CROSS_COMPILE env variable set."),
+                    VarError::NotUnicode(_)=>println!("cargo:warning=You are cross compiling but the CROSS_COMPILE env variable is invalid.")
+                };
+                println!("cargo:warning=This may cause type name and alignment problems!");
+            }
+        }
+    }
+
     // The bindgen::Builder is the main entry point
     // to bindgen, and lets you build up options for
     // the resulting bindings.
