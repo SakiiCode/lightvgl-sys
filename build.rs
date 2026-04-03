@@ -74,9 +74,8 @@ fn main() {
     };
 
     // Set correct target triple for bindgen when cross-compiling
-    let target = env::var("CROSS_COMPILE").map_or_else(
-        |_| env("TARGET", "Cargo build scripts always have TARGET"),
-        |c| c.trim_end_matches('-').to_owned(),
+    let target = env::var("CROSS_COMPILE").unwrap_or(
+        env("TARGET", "Cargo build scripts always have TARGET"),
     );
     let host = env("HOST", "Cargo build scripts always have HOST");
     let cross_compile_flags = if target != host {
