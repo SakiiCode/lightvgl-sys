@@ -26,9 +26,15 @@ fn main() {
 
     println!("cargo:rerun-if-env-changed={}", CONFIG_NAME);
 
+    println!("cargo:rerun-if-env-changed={}", "LV_COMPILE_ARGS");
     println!("cargo:rerun-if-env-changed={}", "LV_COMPILER_ARGS");
 
     let mut compiler_args = string_vec!["-DLV_USE_PRIVATE_API=1","-Wno-unused-parameter"];
+
+    if let Some(args) = option_env!("LV_COMPILE_ARGS") {
+        let args = args.split(' ');
+        compiler_args.extend(args.map(|s|s.to_owned()));
+    }
 
     if let Some(args) = option_env!("LV_COMPILER_ARGS") {
         let args = args.split(' ');
