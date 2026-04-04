@@ -147,6 +147,9 @@ fn compile_library(compiler_args: Vec<String>, vendor: PathBuf) {
     // Fix for ESP32
     cfg.flag_if_supported("-mlongcalls");
 
+    // Fix for GCC
+    cfg.flag_if_supported("-fno-short-enums");
+
     compiler_args.iter().for_each(|arg| {
         let _ = cfg.flag(arg);
     });
