@@ -29,16 +29,16 @@ fn main() {
     println!("cargo:rerun-if-env-changed={}", "LV_COMPILE_ARGS");
     println!("cargo:rerun-if-env-changed={}", "LV_COMPILER_ARGS");
 
-    let mut compiler_args = string_vec!["-DLV_USE_PRIVATE_API=1","-Wno-unused-parameter"];
+    let mut compiler_args = string_vec!["-DLV_USE_PRIVATE_API=1", "-Wno-unused-parameter"];
 
     if let Some(args) = option_env!("LV_COMPILE_ARGS") {
         let args = args.split(' ');
-        compiler_args.extend(args.map(|s|s.to_owned()));
+        compiler_args.extend(args.map(|s| s.to_owned()));
     }
 
     if let Some(args) = option_env!("LV_COMPILER_ARGS") {
         let args = args.split(' ');
-        compiler_args.extend(args.map(|s|s.to_owned()));
+        compiler_args.extend(args.map(|s| s.to_owned()));
     }
 
     // if use-vendored-config is enabled, autodetect lv_conf.h in the vendor folder
@@ -80,12 +80,11 @@ fn main() {
     };
 
     #[cfg(feature = "demos")]
-    compiler_args.extend(string_arr!["-I",vendor.to_string_lossy().to_string()]);
+    compiler_args.extend(string_arr!["-I", vendor.to_string_lossy().to_string()]);
 
     // Set correct target triple for bindgen when cross-compiling
-    let target = env::var("CROSS_COMPILE").unwrap_or(
-        env("TARGET", "Cargo build scripts always have TARGET"),
-    );
+    let target = env::var("CROSS_COMPILE")
+        .unwrap_or(env("TARGET", "Cargo build scripts always have TARGET"));
     let host = env("HOST", "Cargo build scripts always have HOST");
     let cross_compile_flags = if target != host {
         string_vec!["-target", &target]
@@ -95,23 +94,28 @@ fn main() {
 
     if target != host {
         match env::var("CROSS_COMPILE") {
-            Ok(_)=>{},
-            Err(error)=>{
+            Ok(_) => {}
+            Err(error) => {
                 match error {
-                    VarError::NotPresent=>println!("cargo:warning=You are cross compiling but don't have CROSS_COMPILE env variable set."),
-                    VarError::NotUnicode(_)=>println!("cargo:warning=You are cross compiling but the CROSS_COMPILE env variable is invalid.")
+                    VarError::NotPresent => println!(
+                        "cargo:warning=You are cross compiling but don't have CROSS_COMPILE env variable set."
+                    ),
+                    VarError::NotUnicode(_) => println!(
+                        "cargo:warning=You are cross compiling but the CROSS_COMPILE env variable is invalid."
+                    ),
                 };
                 println!("cargo:warning=This may cause type name and alignment problems!");
             }
         }
     }
-    
-    #[cfg(feature = "demos")]
-    let headers = ["lvgl/lvgl.h","lvgl/demos/lv_demos.h"];
-    #[cfg(not(feature = "demos"))]
-    let headers = ["lvgl/lvgl.h"];
 
-    let headers: Vec<String> = headers.iter().map(|path|vendor.join(path).to_string_lossy().to_string()).collect();
+    
+    let headers = ["lvgl/lvgl.h", #[cfg(feature = "demos")] "lvgl/demos/lv_demos.h"];
+
+    let headers: Vec<String> = headers
+        .iter()
+        .map(|path| vendor.join(path).to_string_lossy().to_string())
+        .collect();
 
     // The bindgen::Builder is the main entry point
     // to bindgen, and lets you build up options for
