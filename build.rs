@@ -79,6 +79,9 @@ fn main() {
         ]);
     };
 
+    #[cfg(feature = "demos")]
+    compiler_args.extend(string_arr!["-I",vendor.to_string_lossy().to_string()]);
+
     // Set correct target triple for bindgen when cross-compiling
     let target = env::var("CROSS_COMPILE").unwrap_or(
         env("TARGET", "Cargo build scripts always have TARGET"),
@@ -102,6 +105,13 @@ fn main() {
             }
         }
     }
+    
+    #[cfg(feature = "demos")]
+    let headers = ["lvgl/lvgl.h","lvgl/demos/lv_demos.h"];
+    #[cfg(not(feature = "demos"))]
+    let headers = ["lvgl/lvgl.h"];
+
+    let headers: Vec<String> = headers.iter().map(|path|vendor.join(path).to_string_lossy().to_string()).collect();
 
     // The bindgen::Builder is the main entry point
     // to bindgen, and lets you build up options for
@@ -111,7 +121,7 @@ fn main() {
         .clang_args(cross_compile_flags)
         // The input header we would like to generate
         // bindings for.
-        .header(vendor.join("lvgl/lvgl.h").to_string_lossy())
+        .headers(headers)
         // Tell cargo to invalidate the built crate whenever any of the
         // included header files changed.
         .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
@@ -138,11 +148,16 @@ fn main() {
 
 #[cfg(feature = "library")]
 fn compile_library(compiler_args: Vec<String>, vendor: PathBuf) {
+    let mut cfg: cc::Build = cc::Build::new();
+
     let lvgl_src = vendor.join("lvgl").join("src");
-
-    let mut cfg = cc::Build::new();
-
     add_c_files(&mut cfg, &lvgl_src);
+
+    #[cfg(feature = "demos")]
+    {
+        let lvgl_demos = vendor.join("lvgl").join("demos");
+        add_c_files(&mut cfg, &lvgl_demos);
+    }
 
     // Fix for ESP32
     cfg.flag_if_supported("-mlongcalls");

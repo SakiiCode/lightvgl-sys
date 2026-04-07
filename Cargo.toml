@@ -2,22 +2,24 @@
 name = "lightvgl-sys"
 version = "9.5.2"
 edition = "2024"
-license = "MIT"
 description = "Raw bindings to the LVGL C library."
+readme = "README.md"
 homepage = "https://lvgl.io"
 repository = "https://github.com/SakiiCode/lightvgl-sys"
-readme = "README.md"
-categories = ["embedded", "gui", "external-ffi-bindings", "no-std", "graphics"]
+license = "MIT"
 keywords = ["lvgl"]
+categories = ["embedded", "external-ffi-bindings", "graphics", "gui", "no-std"]
 exclude = [
-    "vendor/lvgl/demos",
-    "vendor/lvgl/tests",
-    "vendor/lvgl/examples",
-    "vendor/lvgl/docs",
-    "vendor/lvgl/scripts",
-    "vendor/lvgl/env_support",
+  "vendor/lvgl/.devcontainer",
+  "vendor/lvgl/.github",
+  "vendor/lvgl/configs",
+  "vendor/lvgl/docs",
+  "vendor/lvgl/env_support",
+  "vendor/lvgl/examples",
+  "vendor/lvgl/scripts",
+  "vendor/lvgl/tests",
+  "vendor/lvgl/zephyr",
 ]
-
 
 [package.metadata.docs.rs]
 features = ["use-vendored-config"]
@@ -31,6 +33,7 @@ string-literals = "1.0.1"
 
 [features]
 default = ["library", "raw-bindings"]
+demos = []
 library = []
 raw-bindings = []
 use-vendored-config = []
