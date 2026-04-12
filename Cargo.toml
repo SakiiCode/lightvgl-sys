@@ -1,6 +1,6 @@
 [package]
 name = "lightvgl-sys"
-version = "9.5.2"
+version = "9.5.3-beta.0"
 edition = "2024"
 description = "Raw bindings to the LVGL C library."
 readme = "README.md"
@@ -19,6 +19,10 @@ exclude = [
   "vendor/lvgl/scripts",
   "vendor/lvgl/tests",
   "vendor/lvgl/zephyr",
+  "vendor/lvgl/demos/music",
+  "vendor/lvgl/demos/stress",
+  "vendor/lvgl/demos/benchmark",
+  "vendor/lvgl/demos/widgets/screenshot1.gif",
 ]
 
 [package.metadata.docs.rs]
