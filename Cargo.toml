@@ -1,6 +1,6 @@
 [package]
 name = "lightvgl-sys"
-version = "9.5.3-beta.0"
+version = "9.5.3-beta.1"
 edition = "2024"
 description = "Raw bindings to the LVGL C library."
 readme = "README.md"
