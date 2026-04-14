@@ -29,7 +29,7 @@ fn main() {
     println!("cargo:rerun-if-env-changed={}", "LV_COMPILE_ARGS");
     println!("cargo:rerun-if-env-changed={}", "LV_COMPILER_ARGS");
 
-    let mut compiler_args = string_vec!["-DLV_USE_PRIVATE_API=1", "-Wno-unused-parameter"];
+    let mut compiler_args = string_vec!["-DLV_USE_PRIVATE_API=1"];
 
     if let Some(args) = option_env!("LV_COMPILE_ARGS") {
         let args = args.split(' ');
@@ -168,6 +168,9 @@ fn compile_library(compiler_args: Vec<String>, vendor: PathBuf) {
 
     // Fix for GCC
     cfg.flag_if_supported("-fno-short-enums");
+
+    // Fix warnings if most color formats are disabled
+    cfg.flag_if_supported("-Wno-unused-parameter");
 
     compiler_args.iter().for_each(|arg| {
         let _ = cfg.flag(arg);
