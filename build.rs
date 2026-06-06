@@ -37,6 +37,7 @@ fn main() {
     }
 
     if let Some(args) = option_env!("LV_COMPILER_ARGS") {
+        println!("cargo:warning=LV_COMPILER_ARGS exists only for backwards compatibility. Prefer LV_COMPILE_ARGS if possible.");
         let args = args.split(' ');
         compiler_args.extend(args.map(|s| s.to_owned()));
     }
@@ -134,7 +135,8 @@ fn main() {
         // Wrapping unsafe ops is necessary for Rust 2024 edition
         .wrap_unsafe_ops(true)
         // Use ::core for no_std compatibility
-        .use_core()
+        .use_core();
+    let bindings = bindings_builder
         // Finish the builder and generate the bindings.
         .generate()
         // Unwrap the Result and panic on failure.
