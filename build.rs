@@ -110,8 +110,15 @@ fn main() {
         }
     }
 
-    
-    let headers = ["lvgl/lvgl.h", #[cfg(feature = "demos")] "lvgl/demos/lv_demos.h"];
+    let sysroot_arg = option_env!("LV_SYSROOT").iter().flat_map(|path|{
+        ["--sysroot", path]
+    });
+
+    let headers = [
+        "lvgl/lvgl.h",
+        #[cfg(feature = "demos")]
+        "lvgl/demos/lv_demos.h",
+    ];
 
     let headers: Vec<String> = headers
         .iter()
@@ -121,9 +128,10 @@ fn main() {
     // The bindgen::Builder is the main entry point
     // to bindgen, and lets you build up options for
     // the resulting bindings.
-    let bindings = bindgen::Builder::default()
+    let bindings_builder = bindgen::Builder::default()
         .clang_args(&compiler_args)
         .clang_args(cross_compile_flags)
+        .clang_args(sysroot_arg)
         // The input header we would like to generate
         // bindings for.
         .headers(headers)

@@ -13,16 +13,16 @@ exclude = [
   "vendor/lvgl/.devcontainer",
   "vendor/lvgl/.github",
   "vendor/lvgl/configs",
+  "vendor/lvgl/demos/benchmark",
+  "vendor/lvgl/demos/music",
+  "vendor/lvgl/demos/stress",
+  "vendor/lvgl/demos/widgets/screenshot1.gif",
   "vendor/lvgl/docs",
   "vendor/lvgl/env_support",
   "vendor/lvgl/examples",
   "vendor/lvgl/scripts",
   "vendor/lvgl/tests",
   "vendor/lvgl/zephyr",
-  "vendor/lvgl/demos/music",
-  "vendor/lvgl/demos/stress",
-  "vendor/lvgl/demos/benchmark",
-  "vendor/lvgl/demos/widgets/screenshot1.gif",
 ]
 
 [package.metadata.docs.rs]

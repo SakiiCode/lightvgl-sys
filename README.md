@@ -25,11 +25,12 @@ DEP_LV_CONFIG_PATH=`pwd` cargo build
 
 You might need to set one or more of these env variables, especially when cross-compiling:
 - `LV_COMPILE_ARGS`:  Extra arguments to be passed both to bindgen and to the C compiler
+- `LV_SYSROOT`: Path to the bindgen sysroot folder (`--sysroot ...`)
 - `CROSS_COMPILE`: Target triple when cross-compiling
 - `LIBCLANG_PATH`: Path to the directory containing *libclang.so* or *libclang.dll*
 
 Setting `BINDGEN_EXTRA_CLANG_ARGS` directly is discouraged as other crates might interfere with it,
-for example `esp-idf-sys` can override the value.
+for example `esp-idf-sys` might override the value.
 
 ## Compatibility table
 
