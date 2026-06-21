@@ -31,7 +31,7 @@ features = ["use-vendored-config"]
 [dependencies]
 
 [build-dependencies]
-bindgen = "0.72.1"
+bindgen = ">=0.71"
 cc = "1.2"
 string-literals = "1.0.1"
 
