@@ -195,9 +195,9 @@ fn add_c_files(build: &mut cc::Build, path: impl AsRef<Path>) {
         let e = e.unwrap();
         let path = e.path();
         if e.file_type().unwrap().is_dir() {
-            add_c_files(build, e.path());
+            add_c_files(build, path);
         } else if path.extension().and_then(|s| s.to_str()) == Some("c") {
-            build.file(&path);
+            build.file(path);
         }
     }
 }
