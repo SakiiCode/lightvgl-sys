@@ -31,13 +31,17 @@ features = ["use-vendored-config"]
 [dependencies]
 
 [build-dependencies]
-bindgen = ">=0.71"
-cc = "1.2"
+bindgen = {
+  version = ">=0.71",
+  default-features = false,
+  features = ["runtime"]
+}
+cc = { version = "1.2", optional = true }
 string-literals = "1.0.1"
 
 [features]
 default = ["library", "raw-bindings"]
 demos = []
-library = []
+library = ["dep:cc"]
 raw-bindings = []
 use-vendored-config = []
