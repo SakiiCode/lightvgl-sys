@@ -43,5 +43,5 @@ string-literals = "1.0.1"
 default = ["library"]
 demos = []
 library = ["dep:cc"]
-export = []
+export-source = []
 use-vendored-config = []
