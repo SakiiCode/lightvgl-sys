@@ -4,6 +4,8 @@ use std::path::{Path, PathBuf};
 use string_literals::{string_arr, string_vec};
 
 static CONFIG_NAME: &str = "DEP_LV_CONFIG_PATH";
+static EXTRA_SRC_NAME: &str = "LV_EXTRA_C_FILES";
+
 
 fn env(name: &str, msg: &str) -> String {
     match env::var(name) {
@@ -25,9 +27,9 @@ fn main() {
     let vendor = project_dir.join("vendor");
 
     println!("cargo:rerun-if-env-changed={}", CONFIG_NAME);
-
     println!("cargo:rerun-if-env-changed={}", "LV_COMPILE_ARGS");
     println!("cargo:rerun-if-env-changed={}", "LV_COMPILER_ARGS");
+    println!("cargo:rerun-if-env-changed={}", EXTRA_SRC_NAME);
 
     let mut compiler_args = string_vec!["-DLV_USE_PRIVATE_API=1"];
 
@@ -77,6 +79,7 @@ fn main() {
             "-DLV_CONF_INCLUDE_SIMPLE=1",
             "-I",
             conf_path.to_string_lossy().to_string(),
+            "-DLV_LVGL_H_INCLUDE_SIMPLE=1"
         ]);
     };
 
@@ -164,6 +167,8 @@ fn main() {
 fn compile_library(compiler_args: Vec<String>, vendor: PathBuf) {
     let mut cfg: cc::Build = cc::Build::new();
 
+    cfg.include("vendor/lvgl");
+
     let lvgl_src = vendor.join("lvgl").join("src");
     add_c_files(&mut cfg, &lvgl_src);
 
@@ -172,6 +177,11 @@ fn compile_library(compiler_args: Vec<String>, vendor: PathBuf) {
         let lvgl_demos = vendor.join("lvgl").join("demos");
         add_c_files(&mut cfg, &lvgl_demos);
     }
+
+    if let Ok(additional_src) = std::env::var(EXTRA_SRC_NAME) {
+        add_c_files(&mut cfg, &additional_src);
+    };
+    
 
     // Fix for ESP32
     cfg.flag_if_supported("-mlongcalls");
