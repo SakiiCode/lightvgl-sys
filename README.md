@@ -6,19 +6,19 @@ Rust raw bindings for the LVGL C library.
 
 Build requires the following environment variables to be set:
 
-- `DEP_LV_CONFIG_PATH`: Path to the directory containing the `lv_conf.h` header file used for configuration of the LVGL library.
+- `LV_CONFIG_DIR`: Path to the directory containing the `lv_conf.h` header file used for configuration of the LVGL library.
 
 It is easier to store them in `.cargo/config.toml` then rust-analyzer will also pick them up.
 
 ```toml
 [env]
-DEP_LV_CONFIG_PATH = { relative = true, value = "." }
+LV_CONFIG_DIR = { relative = true, value = "." }
 ```
 
 Alternatively, it can be added before cargo commands:
 
 ```sh
-DEP_LV_CONFIG_PATH=`pwd` cargo build
+LV_CONFIG_DIR=`pwd` cargo build
 ```
 
 ## Optional configuration
@@ -48,10 +48,28 @@ for example `esp-idf-sys` might override the value.
 
 | lightvgl-sys | LVGL  |
 | ------------ | ----- |
+| 9.6.x        | 9.6.0 |
 | 9.5.x        | 9.5.0 |
 | 9.4.x        | 9.4.0 |
 | 9.3.x        | 9.3.0 |
 | 9.2.x        | 9.2.2 |
+
+## Breaking changes
+
+### v9.6.x
+
+- `raw-bindings` feature has been renamed to `export-source` and it is no longer a default feature
+- `DEP_LV_CONFIG_PATH` has been renamed to `LV_CONFIG_DIR`
+- Enum naming has been changed to the `constified_enum_module` format:
+    ```rust
+    // Before
+    use lightvgl_sys::lv_align_t__LV_ALIGN_CENTER;
+    let align = lv_align_t__LV_ALIGN_CENTER;
+
+    // After
+    use lightvgl_sys::lv_align_t::LV_ALIGN_DEFAULT;
+    let align = LV_ALIGN_DEFAULT;
+    ```
 
 ## See also
 

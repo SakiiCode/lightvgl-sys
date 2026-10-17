@@ -3,9 +3,8 @@ use std::path::{Path, PathBuf};
 
 use string_literals::{string_arr, string_vec};
 
-static CONFIG_NAME: &str = "DEP_LV_CONFIG_PATH";
+static CONFIG_NAME: &str = "LV_CONFIG_DIR";
 static EXTRA_SRC_NAME: &str = "LV_EXTRA_C_FILES";
-
 
 fn env(name: &str, msg: &str) -> String {
     match env::var(name) {
@@ -49,7 +48,7 @@ fn main() {
     if !cfg!(feature = "use-vendored-config") {
         let config_path = env(
             CONFIG_NAME,
-            "lv_conf.h not found. Set DEP_LV_CONFIG_PATH to its directory.",
+            "lv_conf.h not found. Set LV_CONFIG_DIR to its directory.",
         );
 
         let conf_path = PathBuf::from(config_path);
@@ -145,6 +144,8 @@ fn main() {
         .layout_tests(false)
         // Wrapping unsafe ops is necessary for Rust 2024 edition
         .wrap_unsafe_ops(true)
+        // Better enum ergonomics
+        .constified_enum_module("lv_.*_t")
         // Use ::core for no_std compatibility
         .use_core();
     let bindings = bindings_builder

@@ -40,8 +40,8 @@ cc = { version = "1.2", optional = true }
 string-literals = "1.0.1"
 
 [features]
-default = ["library", "raw-bindings"]
+default = ["library"]
 demos = []
 library = ["dep:cc"]
-raw-bindings = []
+export-source = []
 use-vendored-config = []
