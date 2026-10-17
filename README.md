@@ -48,10 +48,26 @@ for example `esp-idf-sys` might override the value.
 
 | lightvgl-sys | LVGL  |
 | ------------ | ----- |
+| 9.6.x        | 9.6.0 |
 | 9.5.x        | 9.5.0 |
 | 9.4.x        | 9.4.0 |
 | 9.3.x        | 9.3.0 |
 | 9.2.x        | 9.2.2 |
+
+### Breaking changes
+
+#### v9.6.x
+
+- `raw-bindings` feature has been renamed to `export-source` and it is no longer a default feature
+- `DEP_LV_CONFIG_PATH` has been renamed to `LV_CONFIG_DIR`
+- Enum naming has been changed to the newtype format:
+    ```rust
+    // Before
+    let align = lightvgl_sys::lv_align_t__LV_ALIGN_CENTER;
+
+    // After
+    let align = lightvgl_sys::lv_align_t::LV_ALIGN_DEFAULT;
+    ```
 
 ## See also
 
