@@ -145,7 +145,7 @@ fn main() {
         // Wrapping unsafe ops is necessary for Rust 2024 edition
         .wrap_unsafe_ops(true)
         // Better enum ergonomics
-        .newtype_enum("lv_.*_t")
+        .constified_enum_module("lv_.*_t")
         // Use ::core for no_std compatibility
         .use_core();
     let bindings = bindings_builder
